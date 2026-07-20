@@ -1,0 +1,104 @@
+2026-07-20 22:27:38.544 [background-preinit] INFO  o.h.validator.internal.util.Version [] - HV000001: Hibernate Validator 8.0.1.Final
+2026-07-20 22:27:38.570 [main] INFO  com.yanque.YqAdminApplication [] - Starting YqAdminApplication using Java 17 with PID 9436 (D:\Eight-project\YanQue\yq-admin\target\classes started by admin in D:\Eight-project\YanQue)
+2026-07-20 22:27:38.570 [main] INFO  com.yanque.YqAdminApplication [] - The following 1 profile is active: "dev"
+2026-07-20 22:27:39.529 [main] INFO  o.s.b.w.embedded.tomcat.TomcatWebServer [] - Tomcat initialized with port 8080 (http)
+2026-07-20 22:27:39.534 [main] INFO  o.apache.coyote.http11.Http11NioProtocol [] - Initializing ProtocolHandler ["http-nio-8080"]
+2026-07-20 22:27:39.540 [main] INFO  o.apache.catalina.core.StandardService [] - Starting service [Tomcat]
+2026-07-20 22:27:39.540 [main] INFO  org.apache.catalina.core.StandardEngine [] - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-20 22:27:39.583 [main] INFO  o.a.c.c.C.[.[localhost].[/yq-admin] [] - Initializing Spring embedded WebApplicationContext
+2026-07-20 22:27:39.584 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [] - Root WebApplicationContext: initialization completed in 984 ms
+2026-07-20 22:27:40.348 [main] INFO  o.apache.coyote.http11.Http11NioProtocol [] - Starting ProtocolHandler ["http-nio-8080"]
+2026-07-20 22:27:40.363 [main] INFO  o.s.b.w.embedded.tomcat.TomcatWebServer [] - Tomcat started on port 8080 (http) with context path '/yq-admin'
+2026-07-20 22:27:40.371 [main] INFO  com.yanque.YqAdminApplication [] - Started YqAdminApplication in 2.157 seconds (process running for 2.579)
+2026-07-20 22:27:49.739 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[.[localhost].[/yq-admin] [] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-20 22:27:49.739 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [] - Initializing Servlet 'dispatcherServlet'
+2026-07-20 22:27:49.740 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [] - Completed initialization in 1 ms
+2026-07-20 22:27:49.856 [http-nio-8080-exec-1] INFO  c.yanque.common.config.RequestLogAspect [0f2b4409228143f7a69a4059247b0886] - ===== 请求开始 =====
+2026-07-20 22:27:49.857 [http-nio-8080-exec-1] INFO  c.yanque.common.config.RequestLogAspect [0f2b4409228143f7a69a4059247b0886] - 请求路径: POST /yq-admin/users
+2026-07-20 22:27:49.857 [http-nio-8080-exec-1] INFO  c.yanque.common.config.RequestLogAspect [0f2b4409228143f7a69a4059247b0886] - 请求方法: com.yanque.modules.users.controller.SysUserController.create
+2026-07-20 22:27:49.862 [http-nio-8080-exec-1] INFO  c.yanque.common.config.RequestLogAspect [0f2b4409228143f7a69a4059247b0886] - 请求参数: [UserAddReq(username=admin, password=123456, nickname=管理员, realName=张三, phone=13800138000, email=admin@example.com, unionId=oUpF8uMuAJO_M2pxb1Q9zNjWeS6o, status=ACTIVE)]
+2026-07-20 22:27:49.876 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource [0f2b4409228143f7a69a4059247b0886] - HikariPool-1 - Starting...
+2026-07-20 22:27:50.017 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.pool.HikariPool [0f2b4409228143f7a69a4059247b0886] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2b74c314
+2026-07-20 22:27:50.018 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource [0f2b4409228143f7a69a4059247b0886] - HikariPool-1 - Start completed.
+2026-07-20 22:27:50.061 [http-nio-8080-exec-1] ERROR c.y.c.exception.GlobalExceptionHandler [0f2b4409228143f7a69a4059247b0886] - 业务异常: code=10005, message=用户名已存在
+com.yanque.common.exception.BusinessException: 用户名已存在
+	at com.yanque.common.exception.BusinessException.of(BusinessException.java:61)
+	at com.yanque.modules.users.service.impl.SysUserServiceImpl.create(SysUserServiceImpl.java:25)
+	at com.yanque.modules.users.controller.SysUserController.create(SysUserController.java:27)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.framework.adapter.AfterReturningAdviceInterceptor.invoke(AfterReturningAdviceInterceptor.java:57)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor.invoke(MethodBeforeAdviceInterceptor.java:58)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
+	at com.yanque.modules.users.controller.SysUserController$$SpringCGLIB$$0.create(<generated>)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2026-07-20 22:27:58.677 [http-nio-8080-exec-2] INFO  c.yanque.common.config.RequestLogAspect [84706eca09f4493c9976a482120f6536] - ===== 请求开始 =====
+2026-07-20 22:27:58.677 [http-nio-8080-exec-2] INFO  c.yanque.common.config.RequestLogAspect [84706eca09f4493c9976a482120f6536] - 请求路径: POST /yq-admin/users
+2026-07-20 22:27:58.677 [http-nio-8080-exec-2] INFO  c.yanque.common.config.RequestLogAspect [84706eca09f4493c9976a482120f6536] - 请求方法: com.yanque.modules.users.controller.SysUserController.create
+2026-07-20 22:27:58.677 [http-nio-8080-exec-2] INFO  c.yanque.common.config.RequestLogAspect [84706eca09f4493c9976a482120f6536] - 请求参数: [UserAddReq(username=admin111, password=123456, nickname=管理员, realName=张三, phone=13800138000, email=admin@example.com, unionId=oUpF8uMuAJO_M2pxb1Q9zNjWeS6o, status=ACTIVE)]
+2026-07-20 22:27:58.689 [http-nio-8080-exec-2] INFO  c.yanque.common.config.RequestLogAspect [84706eca09f4493c9976a482120f6536] - 响应结果: ApiResponse(code=200, message=success, data=39)
+2026-07-20 22:27:58.689 [http-nio-8080-exec-2] INFO  c.yanque.common.config.RequestLogAspect [84706eca09f4493c9976a482120f6536] - ===== 请求结束 =====
+2026-07-20 22:49:13.672 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource [] - HikariPool-1 - Shutdown initiated...
+2026-07-20 22:49:13.679 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource [] - HikariPool-1 - Shutdown completed.
