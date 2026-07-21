@@ -1,0 +1,29 @@
+2026-07-21 15:31:39.605 [background-preinit] INFO  o.h.validator.internal.util.Version [] - HV000001: Hibernate Validator 8.0.1.Final
+2026-07-21 15:31:39.644 [main] INFO  com.yanque.YqAdminApplication [] - Starting YqAdminApplication using Java 17 with PID 27524 (D:\Eight-project\YanQue\yq-admin\target\classes started by admin in D:\Eight-project\YanQue)
+2026-07-21 15:31:39.645 [main] INFO  com.yanque.YqAdminApplication [] - The following 1 profile is active: "dev"
+2026-07-21 15:31:40.249 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [] - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-21 15:31:40.251 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [] - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-21 15:31:40.279 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [] - Finished Spring Data repository scanning in 15 ms. Found 0 Redis repository interfaces.
+2026-07-21 15:31:40.893 [main] INFO  o.s.b.w.embedded.tomcat.TomcatWebServer [] - Tomcat initialized with port 8080 (http)
+2026-07-21 15:31:40.900 [main] INFO  o.apache.coyote.http11.Http11NioProtocol [] - Initializing ProtocolHandler ["http-nio-8080"]
+2026-07-21 15:31:40.901 [main] INFO  o.apache.catalina.core.StandardService [] - Starting service [Tomcat]
+2026-07-21 15:31:40.902 [main] INFO  org.apache.catalina.core.StandardEngine [] - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-07-21 15:31:40.961 [main] INFO  o.a.c.c.C.[.[localhost].[/yq-admin] [] - Initializing Spring embedded WebApplicationContext
+2026-07-21 15:31:40.961 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext [] - Root WebApplicationContext: initialization completed in 1277 ms
+2026-07-21 15:31:42.039 [main] INFO  o.apache.coyote.http11.Http11NioProtocol [] - Starting ProtocolHandler ["http-nio-8080"]
+2026-07-21 15:31:42.053 [main] INFO  o.s.b.w.embedded.tomcat.TomcatWebServer [] - Tomcat started on port 8080 (http) with context path '/yq-admin'
+2026-07-21 15:31:42.061 [main] INFO  com.yanque.YqAdminApplication [] - Started YqAdminApplication in 2.823 seconds (process running for 3.398)
+2026-07-21 15:31:50.447 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[.[localhost].[/yq-admin] [] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-21 15:31:50.447 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [] - Initializing Servlet 'dispatcherServlet'
+2026-07-21 15:31:50.448 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet [] - Completed initialization in 1 ms
+2026-07-21 15:31:50.547 [http-nio-8080-exec-1] INFO  c.yanque.commons.config.RequestLogAspect [f73c8bc4362645a898ab999b6b71938a] - ===== 请求开始 =====
+2026-07-21 15:31:50.547 [http-nio-8080-exec-1] INFO  c.yanque.commons.config.RequestLogAspect [f73c8bc4362645a898ab999b6b71938a] - 请求路径: POST /yq-admin/users
+2026-07-21 15:31:50.548 [http-nio-8080-exec-1] INFO  c.yanque.commons.config.RequestLogAspect [f73c8bc4362645a898ab999b6b71938a] - 请求方法: com.yanque.modules.users.controller.SysUserController.login
+2026-07-21 15:31:50.550 [http-nio-8080-exec-1] INFO  c.yanque.commons.config.RequestLogAspect [f73c8bc4362645a898ab999b6b71938a] - 请求参数: [LoginReq(username=admin111, password=123456)]
+2026-07-21 15:31:50.568 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource [f73c8bc4362645a898ab999b6b71938a] - HikariPool-1 - Starting...
+2026-07-21 15:31:50.680 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.pool.HikariPool [f73c8bc4362645a898ab999b6b71938a] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@c32cf29
+2026-07-21 15:31:50.682 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource [f73c8bc4362645a898ab999b6b71938a] - HikariPool-1 - Start completed.
+2026-07-21 15:31:51.126 [http-nio-8080-exec-1] INFO  c.yanque.commons.config.RequestLogAspect [f73c8bc4362645a898ab999b6b71938a] - 响应结果: ApiResponse(code=200, message=操作成功, data=LoginRes(token=, signSecret=signSecret))
+2026-07-21 15:31:51.127 [http-nio-8080-exec-1] INFO  c.yanque.commons.config.RequestLogAspect [f73c8bc4362645a898ab999b6b71938a] - ===== 请求结束 =====
+2026-07-21 15:32:16.493 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource [] - HikariPool-1 - Shutdown initiated...
+2026-07-21 15:32:16.497 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource [] - HikariPool-1 - Shutdown completed.
