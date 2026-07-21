@@ -15,10 +15,19 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
+    <update id="login">
+
+
+    </update>
 
     <select id="selectByUsername" resultMap="SysUserMap">
         select  id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
             from sys_user where username = #{username}
+    </select>
+
+    <select id="selectById" resultType="com.yanque.modules.users.pojo.entity.SysUserEntity">
+        select  id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
+            from sys_user where id = #{id}
     </select>
 
     <insert id="insert" parameterType="com.yanque.modules.users.pojo.entity.SysUserEntity"

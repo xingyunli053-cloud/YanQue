@@ -21,8 +21,8 @@
 2026-07-20 22:27:50.017 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.pool.HikariPool [0f2b4409228143f7a69a4059247b0886] - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2b74c314
 2026-07-20 22:27:50.018 [http-nio-8080-exec-1] INFO  com.zaxxer.hikari.HikariDataSource [0f2b4409228143f7a69a4059247b0886] - HikariPool-1 - Start completed.
 2026-07-20 22:27:50.061 [http-nio-8080-exec-1] ERROR c.y.c.exception.GlobalExceptionHandler [0f2b4409228143f7a69a4059247b0886] - 业务异常: code=10005, message=用户名已存在
-com.yanque.common.exception.BusinessException: 用户名已存在
-	at com.yanque.common.exception.BusinessException.of(BusinessException.java:61)
+com.yanque.commons.exception.BusinessException: 用户名已存在
+	at com.yanque.commons.exception.BusinessException.of(BusinessException.java:61)
 	at com.yanque.modules.users.service.impl.SysUserServiceImpl.create(SysUserServiceImpl.java:25)
 	at com.yanque.modules.users.controller.SysUserController.create(SysUserController.java:27)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)

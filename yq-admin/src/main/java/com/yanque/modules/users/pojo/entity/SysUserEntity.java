@@ -1,6 +1,5 @@
 package com.yanque.modules.users.pojo.entity;
 
-import com.yanque.modules.users.pojo.req.UserAddReq;
 import lombok.Data;
 
 import java.util.Date;
