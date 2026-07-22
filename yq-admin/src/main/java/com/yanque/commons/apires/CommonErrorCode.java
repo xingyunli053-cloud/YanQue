@@ -35,7 +35,21 @@ public enum CommonErrorCode implements IErrorCode{
     SIGN_REQUEST_EXPIRED(12003, "请求签名已过期"),
     SIGN_NONCE_REPEATED(12004, "请求已执行，请勿重复提交"),
     SIGN_SECRET_NOT_FOUND(12005, "请求签名密钥不存在"),
-    SIGN_INVALID(12006, "请求签名校验失败");
+    SIGN_INVALID(12006, "请求签名校验失败"),
+
+    ROLE_NOT_FOUND(13001, "角色不存在"),
+    ROLE_CODE_ALREADY_EXISTS(13002, "角色编码已存在"),
+    ROLE_OPERATION_FAILED(13003, "角色操作失败"),
+    PERMISSION_NOT_FOUND(13101, "权限不存在"),
+    PERMISSION_CODE_ALREADY_EXISTS(13102, "权限编码已存在"),
+    PERMISSION_PARENT_INVALID(13103, "父权限不合法"),
+    PERMISSION_HAS_CHILDREN(13104, "当前权限存在子权限，不能删除"),
+    PERMISSION_OPERATION_FAILED(13105, "权限操作失败"),
+    ROLE_PERMISSION_NOT_FOUND(13201, "角色权限关联不存在"),
+    ROLE_PERMISSION_ALREADY_EXISTS(13202, "角色权限关联已存在"),
+    USER_ROLE_NOT_FOUND(13301, "用户角色关联不存在"),
+    USER_ROLE_ALREADY_EXISTS(13302, "用户角色关联已存在"),
+    RELATION_OPERATION_FAILED(13303, "关联关系操作失败");
 
 
     private Integer code;

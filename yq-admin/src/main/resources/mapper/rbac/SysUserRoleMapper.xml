@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yanque.modules.rbac.mapper.SysUserRoleMapper">
+    <resultMap id="EntityMap" type="com.yanque.modules.rbac.pojo.entity.SysUserRoleEntity">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+    <resultMap id="ResponseMap" type="com.yanque.modules.rbac.pojo.vo.resvo.UserRoleRes">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+    <sql id="JoinSelect">
+        select relation.id, relation.user_id, user.username,
+               relation.role_id, role.role_name, relation.created_at
+        from sys_user_role relation
+        inner join sys_user user on user.id = relation.user_id
+        inner join sys_role role on role.id = relation.role_id
+    </sql>
+    <select id="selectById" resultMap="EntityMap">
+        select id, user_id, role_id, created_at from sys_user_role where id = #{id}
+    </select>
+    <select id="selectResById" resultMap="ResponseMap">
+        <include refid="JoinSelect"/> where relation.id = #{id}
+    </select>
+    <select id="selectList" resultMap="ResponseMap">
+        <include refid="JoinSelect"/>
+        <where>
+            <if test="userId != null">and relation.user_id = #{userId}</if>
+            <if test="roleId != null">and relation.role_id = #{roleId}</if>
+        </where>
+        order by relation.id desc
+    </select>
+    <select id="selectRoleIdsByUserId" resultType="java.lang.Long">
+        select role_id from sys_user_role where user_id = #{userId} order by role_id
+    </select>
+    <select id="countUnique" resultType="int">
+        select count(1) from sys_user_role
+        where user_id = #{userId} and role_id = #{roleId}
+        <if test="excludeId != null">and id != #{excludeId}</if>
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user_role (user_id, role_id, created_at)
+        values (#{userId}, #{roleId}, now())
+    </insert>
+    <insert id="batchInsert">
+        insert into sys_user_role (user_id, role_id, created_at) values
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId}, #{roleId}, now())
+        </foreach>
+    </insert>
+    <update id="updateById">
+        update sys_user_role set user_id = #{userId}, role_id = #{roleId} where id = #{id}
+    </update>
+    <delete id="deleteById">delete from sys_user_role where id = #{id}</delete>
+    <delete id="deleteByRoleId">delete from sys_user_role where role_id = #{roleId}</delete>
+    <delete id="deleteByUserId">delete from sys_user_role where user_id = #{userId}</delete>
+</mapper>

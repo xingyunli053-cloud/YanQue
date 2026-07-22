@@ -205,16 +205,6 @@
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
-
-        <!--
-            日志格式配置。
-        -->
-        <encoder>
-            <pattern>${CONSOLE_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
     </springProfile>
 
 </configuration>
-
-    

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yanque.modules.rbac.mapper.SysRolePermissionMapper">
+    <resultMap id="EntityMap" type="com.yanque.modules.rbac.pojo.entity.SysRolePermissionEntity">
+        <id property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="permissionId" column="permission_id"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+    <resultMap id="ResponseMap" type="com.yanque.modules.rbac.pojo.vo.resvo.RolePermissionRes">
+        <id property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="permissionId" column="permission_id"/>
+        <result property="permissionName" column="permission_name"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+    <sql id="JoinSelect">
+        select relation.id, relation.role_id, role.role_name,
+               relation.permission_id, permission.permission_name, relation.created_at
+        from sys_role_permission relation
+        inner join sys_role role on role.id = relation.role_id
+        inner join sys_permission permission on permission.id = relation.permission_id
+    </sql>
+    <select id="selectById" resultMap="EntityMap">
+        select id, role_id, permission_id, created_at from sys_role_permission where id = #{id}
+    </select>
+    <select id="selectResById" resultMap="ResponseMap">
+        <include refid="JoinSelect"/> where relation.id = #{id}
+    </select>
+    <select id="selectList" resultMap="ResponseMap">
+        <include refid="JoinSelect"/>
+        <where>
+            <if test="roleId != null">and relation.role_id = #{roleId}</if>
+            <if test="permissionId != null">and relation.permission_id = #{permissionId}</if>
+        </where>
+        order by relation.id desc
+    </select>
+    <select id="selectPermissionIdsByRoleId" resultType="java.lang.Long">
+        select permission_id from sys_role_permission where role_id = #{roleId} order by permission_id
+    </select>
+    <select id="countUnique" resultType="int">
+        select count(1) from sys_role_permission
+        where role_id = #{roleId} and permission_id = #{permissionId}
+        <if test="excludeId != null">and id != #{excludeId}</if>
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_role_permission (role_id, permission_id, created_at)
+        values (#{roleId}, #{permissionId}, now())
+    </insert>
+    <insert id="batchInsert">
+        insert into sys_role_permission (role_id, permission_id, created_at) values
+        <foreach collection="permissionIds" item="permissionId" separator=",">
+            (#{roleId}, #{permissionId}, now())
+        </foreach>
+    </insert>
+    <update id="updateById">
+        update sys_role_permission
+        set role_id = #{roleId}, permission_id = #{permissionId}
+        where id = #{id}
+    </update>
+    <delete id="deleteById">delete from sys_role_permission where id = #{id}</delete>
+    <delete id="deleteByRoleId">delete from sys_role_permission where role_id = #{roleId}</delete>
+    <delete id="deleteByPermissionId">delete from sys_role_permission where permission_id = #{permissionId}</delete>
+</mapper>

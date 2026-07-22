@@ -45,7 +45,7 @@ button, input, textarea { font: inherit; }
 .brand__text { display: flex; flex-direction: column; color: white; line-height: 1.1; white-space: nowrap; }
 .brand__text strong { font-size: 20px; letter-spacing: .14em; }
 .brand__text span { margin-top: 7px; color: #9fc1b8; font-size: 9px; letter-spacing: .22em; }
-.admin-sidebar .el-menu { border: 0; background: transparent; padding: 8px 12px; }
+.admin-sidebar .el-menu { flex: 1; overflow-y: auto; border: 0; background: transparent; padding: 8px 12px; }
 .admin-sidebar .el-menu-item { height: 48px; margin: 4px 0; padding: 0 16px !important; color: #b9cdc8; border-radius: 12px; }
 .admin-sidebar .el-menu-item:hover { color: #fff; background: rgba(255,255,255,.07); }
 .admin-sidebar .el-menu-item.is-active { color: #153f37; background: #f3c969; font-weight: 700; box-shadow: 0 8px 20px rgba(3, 20, 17, .16); }
@@ -126,6 +126,49 @@ button, input, textarea { font: inherit; }
 .pagination-wrap { display: flex; justify-content: flex-end; padding: 18px 22px; border-top: 1px solid var(--yq-line); }
 .user-cell { display: flex; align-items: center; gap: 10px; }
 .user-cell .el-avatar { color: var(--yq-primary-deep); background: var(--yq-primary-soft); font-size: 12px; font-weight: 700; }
+.code-chip, .api-path { display: inline-flex; align-items: center; max-width: 100%; padding: 3px 7px; overflow: hidden; color: #315950; background: #edf5f2; border-radius: 6px; font-family: Consolas, 'Courier New', monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.api-path { color: #825819; background: #fbf2e5; }
+.permission-tree-panel { min-height: 360px; max-height: 560px; overflow: auto; padding: 2px; }
+.permission-tree-summary { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 14px; padding: 14px 16px; background: linear-gradient(135deg, #edf7f3, #f8fbfa); border: 1px solid #dcebe6; border-radius: 13px; }
+.permission-tree-summary > div:first-child { display: flex; flex-direction: column; gap: 4px; }
+.permission-tree-summary > div:first-child strong { color: #234b42; font-size: 14px; }
+.permission-tree-summary > div:first-child span { color: #7a8e88; font-size: 11px; }
+.permission-tree-summary__actions { display: flex; align-items: center; flex-shrink: 0; gap: 4px; color: #71857f; font-size: 12px; }
+.permission-tree-summary__actions > span { margin-right: 6px; }
+.permission-tree-summary__actions > span strong { color: var(--yq-primary); font-size: 16px; }
+.permission-tree { padding: 7px 10px 10px; background: #fbfcfc; border: 1px solid #e7eeeb; border-radius: 13px; }
+.permission-tree .el-tree-node__content { height: 52px; margin: 2px 0; padding-right: 10px; border-radius: 10px; }
+.permission-tree .el-tree-node__content:hover { background: #eef6f3; }
+.permission-tree .el-checkbox { margin-right: 8px; }
+.permission-node { display: flex; align-items: center; min-width: 0; gap: 11px; }
+.permission-node__icon { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 9px; font-size: 15px; }
+.permission-node__icon.is-menu { color: #167a66; background: #def0ea; }
+.permission-node__icon.is-api { color: #b06b1d; background: #f9ecd9; }
+.permission-node__icon.is-button { color: #526fa7; background: #e7edf7; }
+.permission-node__content { display: flex; flex-direction: column; min-width: 0; gap: 3px; }
+.permission-node__content strong { color: #294a43; font-size: 13px; font-weight: 650; }
+.permission-node__content code { overflow: hidden; color: #8a9995; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.role-permission-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.role-permission-tags .el-tag { max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
+.role-permission-more { display: inline-grid; place-items: center; min-width: 28px; height: 24px; padding: 0 7px; color: var(--yq-primary); background: #edf6f3; border-radius: 999px; cursor: help; font-size: 11px; font-weight: 700; }
+.muted-text { color: #a1adaa; font-size: 12px; }
+.role-assignment-panel { min-height: 280px; }
+.role-assignment-summary { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 14px 16px; background: linear-gradient(135deg, #edf7f3, #f8fbfa); border: 1px solid #dcebe6; border-radius: 13px; }
+.role-assignment-summary > div { display: flex; flex-direction: column; gap: 4px; }
+.role-assignment-summary > div strong { color: #234b42; font-size: 14px; }
+.role-assignment-summary > div span, .role-assignment-summary > span { color: #7b8d88; font-size: 11px; }
+.role-assignment-summary > span strong { color: var(--yq-primary); font-size: 16px; }
+.role-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; max-height: 410px; overflow-y: auto; padding: 2px; }
+.role-option.el-checkbox { width: 100%; height: auto; min-height: 82px; margin: 0; padding: 13px; align-items: flex-start; background: #fbfcfc; border: 1px solid #e5ece9; border-radius: 12px; transition: border-color .18s ease, background .18s ease, box-shadow .18s ease; }
+.role-option.el-checkbox:hover { background: #f4f9f7; border-color: #b8d8cf; }
+.role-option.el-checkbox.is-checked { background: #edf7f3; border-color: #72b5a4; box-shadow: 0 5px 14px rgba(22,122,102,.08); }
+.role-option .el-checkbox__input { margin-top: 6px; }
+.role-option .el-checkbox__label { display: flex; align-items: flex-start; min-width: 0; gap: 10px; padding-left: 9px; white-space: normal; }
+.role-option__icon { display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 32px; color: var(--yq-primary); background: #dff0eb; border-radius: 9px; }
+.role-option__content { display: flex; flex-direction: column; min-width: 0; gap: 3px; }
+.role-option__content strong { color: #2c4b44; font-size: 13px; }
+.role-option__content code { color: #648078; font-size: 10px; }
+.role-option__content small { overflow: hidden; color: #96a39f; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
 .form-grid .is-full { grid-column: 1 / -1; }
 .el-dialog { border-radius: 18px; overflow: hidden; }
@@ -195,6 +238,7 @@ button, input, textarea { font: inherit; }
   .filter-form .el-form-item { width: 100%; margin: 0; }
   .filter-form .el-input, .filter-form .el-select { width: 100% !important; }
   .form-grid { grid-template-columns: 1fr; }
+  .role-option-grid { grid-template-columns: 1fr; }
   .el-dialog { width: calc(100% - 28px) !important; }
   .login-panel { padding: 32px 24px; }
 }

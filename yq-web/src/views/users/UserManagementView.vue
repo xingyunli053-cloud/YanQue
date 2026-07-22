@@ -1,9 +1,10 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Refresh, Search } from '@element-plus/icons-vue'
+import { Plus, Refresh, Search, UserFilled } from '@element-plus/icons-vue'
 import PageHeader from '../../components/PageHeader.vue'
 import { createUser, deleteUser, getUserDetail, getUserPage, updateUser } from '../../api/user'
+import { assignUserRoles, getRolePage, getUserRoleIds } from '../../api/rbac'
 
 const loading = ref(false)
 const rows = ref([])
@@ -11,6 +12,11 @@ const total = ref(0)
 const dialogVisible = ref(false)
 const editingId = ref(null)
 const formRef = ref()
+const roleDialogVisible = ref(false)
+const roleLoading = ref(false)
+const assigningUser = ref(null)
+const availableRoles = ref([])
+const selectedRoleIds = ref([])
 const query = reactive({ pageNum: 1, pageSize: 10, username: '', status: '' })
 const form = reactive({
   username: '', password: '', nickname: '', realName: '', phone: '', email: '', unionId: '', status: 'ACTIVE',
@@ -88,6 +94,28 @@ async function remove(row) {
   loadUsers()
 }
 
+async function openRoleDialog(row) {
+  assigningUser.value = row
+  roleDialogVisible.value = true
+  roleLoading.value = true
+  try {
+    const [roleResult, roleIds] = await Promise.all([
+      getRolePage({ pageNum: 1, pageSize: 100, status: 'ACTIVE' }),
+      getUserRoleIds(row.id),
+    ])
+    availableRoles.value = roleResult.records || []
+    selectedRoleIds.value = roleIds || []
+  } finally {
+    roleLoading.value = false
+  }
+}
+
+async function saveUserRoles() {
+  await assignUserRoles(assigningUser.value.id, selectedRoleIds.value)
+  ElMessage.success('用户角色已更新')
+  roleDialogVisible.value = false
+}
+
 function formatTime(value) {
   if (!value) return '—'
   return new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value))
@@ -135,8 +163,9 @@ onMounted(loadUsers)
         <el-table-column prop="createdAt" label="创建日期" width="120">
           <template #default="scope">{{ formatTime(scope.row.createdAt) }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column label="操作" width="230" fixed="right">
           <template #default="scope">
+            <el-button link type="success" :icon="UserFilled" @click="openRoleDialog(scope.row)">分配角色</el-button>
             <el-button link type="primary" @click="openEdit(scope.row)">编辑</el-button>
             <el-button link type="danger" @click="remove(scope.row)">删除</el-button>
           </template>
@@ -172,6 +201,23 @@ onMounted(loadUsers)
         </div>
       </el-form>
       <template #footer><el-button @click="dialogVisible = false">取消</el-button><el-button type="primary" @click="submit">保存</el-button></template>
+    </el-dialog>
+
+    <el-dialog v-model="roleDialogVisible" :title="`为“${assigningUser?.username || ''}”分配角色`" width="620px">
+      <div v-loading="roleLoading" class="role-assignment-panel">
+        <div class="role-assignment-summary">
+          <div><strong>账号角色</strong><span>一个用户可以同时拥有多个角色</span></div>
+          <span>已选择 <strong>{{ selectedRoleIds.length }}</strong> 个角色</span>
+        </div>
+        <el-checkbox-group v-model="selectedRoleIds" class="role-option-grid">
+          <el-checkbox v-for="role in availableRoles" :key="role.id" :value="role.id" class="role-option">
+            <span class="role-option__icon"><el-icon><UserFilled /></el-icon></span>
+            <span class="role-option__content"><strong>{{ role.roleName }}</strong><code>{{ role.roleCode }}</code><small>{{ role.description || '暂无角色说明' }}</small></span>
+          </el-checkbox>
+        </el-checkbox-group>
+        <el-empty v-if="!roleLoading && !availableRoles.length" description="暂无可分配的启用角色" />
+      </div>
+      <template #footer><el-button @click="roleDialogVisible = false">取消</el-button><el-button type="primary" :loading="roleLoading" @click="saveUserRoles">保存角色</el-button></template>
     </el-dialog>
   </div>
 </template>

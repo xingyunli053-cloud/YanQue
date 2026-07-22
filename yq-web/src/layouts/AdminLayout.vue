@@ -36,6 +36,9 @@ async function logout() {
         <div v-show="!collapsed" class="menu-caption">工作台</div>
         <el-menu-item index="/dashboard"><el-icon><DataBoard /></el-icon><template #title>运营总览</template></el-menu-item>
         <el-menu-item index="/users"><el-icon><User /></el-icon><template #title>用户管理</template></el-menu-item>
+        <div v-show="!collapsed" class="menu-caption">权限中心</div>
+        <el-menu-item index="/system/roles"><el-icon><Avatar /></el-icon><template #title>角色管理</template></el-menu-item>
+        <el-menu-item index="/system/permissions"><el-icon><Key /></el-icon><template #title>权限管理</template></el-menu-item>
         <div v-show="!collapsed" class="menu-caption">教学管理</div>
         <el-menu-item index="/teaching/campuses"><el-icon><OfficeBuilding /></el-icon><template #title>校区管理</template></el-menu-item>
         <el-menu-item index="/teaching/courses"><el-icon><Reading /></el-icon><template #title>课程管理</template></el-menu-item>

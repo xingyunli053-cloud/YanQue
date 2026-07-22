@@ -10,6 +10,8 @@ const routes = [
     children: [
       { path: 'dashboard', name: 'dashboard', component: () => import('../views/DashboardView.vue'), meta: { title: '运营总览' } },
       { path: 'users', name: 'users', component: () => import('../views/users/UserManagementView.vue'), meta: { title: '用户管理' } },
+      { path: 'system/roles', name: 'roles', component: () => import('../views/system/RoleManagementView.vue'), meta: { title: '角色管理' } },
+      { path: 'system/permissions', name: 'permissions', component: () => import('../views/system/PermissionManagementView.vue'), meta: { title: '权限管理' } },
       { path: 'teaching/campuses', name: 'campuses', component: () => import('../views/education/CampusView.vue'), meta: { title: '校区管理' } },
       { path: 'teaching/courses', name: 'courses', component: () => import('../views/education/CourseView.vue'), meta: { title: '课程管理' } },
       { path: 'teaching/course-details', name: 'course-details', component: () => import('../views/education/CourseDetailView.vue'), meta: { title: '课程详情管理' } },
