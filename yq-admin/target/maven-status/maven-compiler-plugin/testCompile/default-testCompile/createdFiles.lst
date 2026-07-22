@@ -1,6 +1,0 @@
-com\yanque\commons\exception\GlobalExceptionHandlerTest.class
-com\yanque\modules\users\controller\SysUserControllerTest.class
-com\yanque\commons\interceptor\JwtTokenInterceptorTest.class
-com\yanque\modules\users\service\impl\SysUserCrudServiceTest.class
-com\yanque\modules\users\service\impl\SysUserServiceImplTest.class
-com\yanque\commons\interceptor\SignInterceptorTest.class

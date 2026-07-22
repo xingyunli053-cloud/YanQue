@@ -1,3 +1,12 @@
 # Runtime log files
 /logs/
 /yq-admin/logs/
+
+# IDE workspace files
+/.idea/
+
+# Backend build output
+/yq-admin/target/
+
+# Frontend development cache
+/yq-web/.vite/
