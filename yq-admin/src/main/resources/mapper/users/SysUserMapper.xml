@@ -15,19 +15,31 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
-    <update id="login">
-
-
-    </update>
-
     <select id="selectByUsername" resultMap="SysUserMap">
-        select  id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
-            from sys_user where username = #{username}
+        select id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
+        from sys_user
+        where username = #{username}
     </select>
 
-    <select id="selectById" resultType="com.yanque.modules.users.pojo.entity.SysUserEntity">
-        select  id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
-            from sys_user where id = #{id}
+    <select id="selectById" resultMap="SysUserMap">
+        select id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
+        from sys_user
+        where id = #{id}
+    </select>
+
+    <select id="selectList" resultMap="SysUserMap"
+            parameterType="com.yanque.modules.users.pojo.vo.reqvo.UserPageReq">
+        select id, username, password, nickname, real_name, phone, email, union_id, status, created_at, updated_at
+        from sys_user
+        <where>
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by id desc
     </select>
 
     <insert id="insert" parameterType="com.yanque.modules.users.pojo.entity.SysUserEntity"
@@ -39,5 +51,23 @@
              #{status}, now(), now())
     </insert>
 
+    <update id="updateById" parameterType="com.yanque.modules.users.pojo.entity.SysUserEntity">
+        update sys_user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="unionId != null">union_id = #{unionId},</if>
+            <if test="status != null">status = #{status},</if>
+            updated_at = now()
+        </set>
+        where id = #{id}
+    </update>
 
+    <delete id="deleteById">
+        delete from sys_user where id = #{id}
+    </delete>
 </mapper>

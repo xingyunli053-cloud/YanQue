@@ -4,7 +4,10 @@ package com.yanque.commons.exception;
 import com.yanque.commons.apires.ApiResponse;
 import com.yanque.commons.apires.CommonErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,11 +24,45 @@ public class GlobalExceptionHandler {
 
     /*
      * 处理业务异常, 捕获的是自定义异常信息.
-     */
+    */
     @ExceptionHandler(BusinessException.class)
-    public ApiResponse<Void> handleBusinessException(BusinessException e){
+    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e){
         log.error("业务异常捕获 , message = {}:",e.getMessage(), e);
-        return ApiResponse.fail(e.getCode(),e.getMessage());
+        ApiResponse<Void> response = ApiResponse.fail(e.getCode(), e.getMessage());
+
+        // token 与签名密钥相关异常统一返回 HTTP 401。
+        if (isUnauthorized(e.getCode())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+        if (CommonErrorCode.SIGN_NONCE_REPEATED.getCode().equals(e.getCode())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    private boolean isUnauthorized(Integer code) {
+        return CommonErrorCode.UNAUTHORIZED.getCode().equals(code)
+                || CommonErrorCode.TOKEN_NOT_FOUND.getCode().equals(code)
+                || CommonErrorCode.TOKEN_INVALID.getCode().equals(code)
+                || CommonErrorCode.TOKEN_EXPIRED.getCode().equals(code)
+                || CommonErrorCode.SIGN_HEADER_MISSING.getCode().equals(code)
+                || CommonErrorCode.SIGN_TIMESTAMP_INVALID.getCode().equals(code)
+                || CommonErrorCode.SIGN_REQUEST_EXPIRED.getCode().equals(code)
+                || CommonErrorCode.SIGN_SECRET_NOT_FOUND.getCode().equals(code)
+                || CommonErrorCode.SIGN_INVALID.getCode().equals(code);
+    }
+
+    /**
+     * 统一处理请求体和查询参数的 Bean Validation 校验异常。
+     */
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidationException(BindException e) {
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError == null
+                ? CommonErrorCode.PARAM_VALID_FAILED.getMessage()
+                : fieldError.getDefaultMessage();
+        return ResponseEntity.badRequest().body(
+                ApiResponse.fail(CommonErrorCode.PARAM_VALID_FAILED, message));
     }
 
 

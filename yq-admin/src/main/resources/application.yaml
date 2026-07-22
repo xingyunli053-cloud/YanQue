@@ -16,6 +16,14 @@ mybatis:
 app:
   logging:
     directory: ${LOG_DIRECTORY:logs}
+  # 用户登录认证配置，生产环境应通过环境变量覆盖 JWT 密钥
+  auth:
+    # Hutool JWT 使用的 HS256 签名密钥
+    jwt-secret: ${JWT_SECRET:yanque-dev-jwt-secret-change-me-2026}
+    # token 和 Redis 登录会话的有效期，单位为秒，默认 2 小时
+    token-expire-seconds: ${TOKEN_EXPIRE_SECONDS:7200}
+    # Redis token 键格式：此前缀 + 用户 ID
+    redis-key-prefix: ${TOKEN_REDIS_KEY_PREFIX:yanque:auth:token:}
 
 # springdoc-openapi项目配置
 springdoc:

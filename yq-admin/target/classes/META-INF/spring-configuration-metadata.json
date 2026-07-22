@@ -1,0 +1,32 @@
+{
+  "groups": [
+    {
+      "name": "app.auth",
+      "type": "com.yanque.commons.config.AuthProperties",
+      "sourceType": "com.yanque.commons.config.AuthProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.auth.jwt-secret",
+      "type": "java.lang.String",
+      "description": "使用 HS256 算法签发 JWT 时使用的密钥。",
+      "sourceType": "com.yanque.commons.config.AuthProperties"
+    },
+    {
+      "name": "app.auth.redis-key-prefix",
+      "type": "java.lang.String",
+      "description": "登录 token 写入 Redis 时使用的键前缀，完整键为此前缀加用户 ID。",
+      "sourceType": "com.yanque.commons.config.AuthProperties",
+      "defaultValue": "yanque:auth:token:"
+    },
+    {
+      "name": "app.auth.token-expire-seconds",
+      "type": "java.lang.Long",
+      "description": "登录 token 的有效期，单位为秒。",
+      "sourceType": "com.yanque.commons.config.AuthProperties",
+      "defaultValue": 0
+    }
+  ],
+  "hints": []
+}
