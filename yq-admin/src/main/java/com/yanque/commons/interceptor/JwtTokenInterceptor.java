@@ -57,6 +57,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         // 4. 从已验签的 token 中解析 uid 和过期时间。
         Long userId = parseLongClaim(jwt, JwtConstants.JWT_CLAIM_USER_ID);
         Long expireTime = parseLongClaim(jwt, JwtConstants.JWT_CLAIM_EXPIRE_TIME);
+        String sessionId = parseStringClaim(jwt, JwtConstants.JWT_CLAIM_ID);
         if (expireTime <= System.currentTimeMillis()) {
             throw BusinessException.of(CommonErrorCode.TOKEN_EXPIRED);
         }
@@ -72,7 +73,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         if (StrUtil.isBlank(signSecret)) {
             throw BusinessException.of(CommonErrorCode.SIGN_SECRET_NOT_FOUND);
         }
-        UserContext.set(userId, signSecret);
+        UserContext.set(userId, signSecret, sessionId);
 
         // 7. 所有校验通过，放行请求。
         return true;
@@ -118,5 +119,13 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         } catch (NumberFormatException exception) {
             throw BusinessException.of(CommonErrorCode.TOKEN_INVALID);
         }
+    }
+
+    private String parseStringClaim(JWT jwt, String claimName) {
+        Object value = jwt.getPayload(claimName);
+        if (value == null || StrUtil.isBlank(value.toString())) {
+            throw BusinessException.of(CommonErrorCode.TOKEN_INVALID);
+        }
+        return value.toString();
     }
 }

@@ -13,8 +13,8 @@ public final class UserContext {
     private UserContext() {
     }
 
-    public static void set(Long userId, String signSecret) {
-        LOGIN_USER_HOLDER.set(new LoginUser(userId, signSecret));
+    public static void set(Long userId, String signSecret, String sessionId) {
+        LOGIN_USER_HOLDER.set(new LoginUser(userId, signSecret, sessionId));
     }
 
     public static Long getUserId() {
@@ -27,10 +27,16 @@ public final class UserContext {
         return loginUser == null ? null : loginUser.signSecret();
     }
 
+    /** 获取 JWT 的 jti，用于区分同一用户的不同登录会话。 */
+    public static String getSessionId() {
+        LoginUser loginUser = LOGIN_USER_HOLDER.get();
+        return loginUser == null ? null : loginUser.sessionId();
+    }
+
     public static void clear() {
         LOGIN_USER_HOLDER.remove();
     }
 
-    private record LoginUser(Long userId, String signSecret) {
+    private record LoginUser(Long userId, String signSecret, String sessionId) {
     }
 }

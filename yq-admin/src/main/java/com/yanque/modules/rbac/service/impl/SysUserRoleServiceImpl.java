@@ -12,6 +12,7 @@ import com.yanque.modules.rbac.pojo.vo.reqvo.UserRolePageReq;
 import com.yanque.modules.rbac.pojo.vo.reqvo.UserRoleSaveReq;
 import com.yanque.modules.rbac.pojo.vo.resvo.UserRoleRes;
 import com.yanque.modules.rbac.service.SysUserRoleService;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import com.yanque.modules.users.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     private final SysUserRoleMapper relationMapper;
     private final SysUserMapper userMapper;
     private final SysRoleMapper roleMapper;
+    private final RbacPermissionService rbacPermissionService;
 
     @Override
     public PageResult<UserRoleRes> page(UserRolePageReq req) {
@@ -52,13 +54,14 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         if (relationMapper.insert(entity) != 1) {
             throw BusinessException.of(CommonErrorCode.RELATION_OPERATION_FAILED);
         }
+        rbacPermissionService.evictUserPermissions(req.getUserId());
         return entity.getId();
     }
 
     @Override
     @Transactional
     public void update(Long id, UserRoleSaveReq req) {
-        getRelationOrThrow(id);
+        SysUserRoleEntity current = getRelationOrThrow(id);
         validateRelation(req, id);
         SysUserRoleEntity entity = new SysUserRoleEntity();
         entity.setId(id);
@@ -67,15 +70,18 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         if (relationMapper.updateById(entity) != 1) {
             throw BusinessException.of(CommonErrorCode.RELATION_OPERATION_FAILED);
         }
+        rbacPermissionService.evictUserPermissions(current.getUserId());
+        rbacPermissionService.evictUserPermissions(req.getUserId());
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        getRelationOrThrow(id);
+        SysUserRoleEntity current = getRelationOrThrow(id);
         if (relationMapper.deleteById(id) != 1) {
             throw BusinessException.of(CommonErrorCode.RELATION_OPERATION_FAILED);
         }
+        rbacPermissionService.evictUserPermissions(current.getUserId());
     }
 
     @Override
@@ -97,6 +103,7 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
         }
         relationMapper.deleteByUserId(userId);
         if (!distinctIds.isEmpty()) relationMapper.batchInsert(userId, distinctIds);
+        rbacPermissionService.evictUserPermissions(userId);
     }
 
     private void validateRelation(UserRoleSaveReq req, Long excludeId) {

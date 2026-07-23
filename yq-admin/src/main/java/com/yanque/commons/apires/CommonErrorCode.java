@@ -37,6 +37,8 @@ public enum CommonErrorCode implements IErrorCode{
     SIGN_SECRET_NOT_FOUND(12005, "请求签名密钥不存在"),
     SIGN_INVALID(12006, "请求签名校验失败"),
 
+    PERMISSION_DENIED(14001, "当前账号没有访问该资源的权限"),
+
     ROLE_NOT_FOUND(13001, "角色不存在"),
     ROLE_CODE_ALREADY_EXISTS(13002, "角色编码已存在"),
     ROLE_OPERATION_FAILED(13003, "角色操作失败"),

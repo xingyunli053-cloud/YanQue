@@ -5,6 +5,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Set;
 
 @Component
 public class RedisUtils{
@@ -31,5 +33,27 @@ public class RedisUtils{
 
     public Boolean delete(String key) {
         return stringRedisTemplate.delete(key);
+    }
+
+    /** 将值记录到 Redis Set，用于维护会话 nonce 或用户权限编码集合。 */
+    public Long addToSet(String key, String... values) {
+        return stringRedisTemplate.opsForSet().add(key, values);
+    }
+
+    public Set<String> getSetMembers(String key) {
+        return stringRedisTemplate.opsForSet().members(key);
+    }
+
+    /** Redis SISMEMBER：判断集合中是否存在指定成员。 */
+    public Boolean isSetMember(String key, String value) {
+        return stringRedisTemplate.opsForSet().isMember(key, value);
+    }
+
+    public Boolean expire(String key, Duration timeout) {
+        return stringRedisTemplate.expire(key, timeout);
+    }
+
+    public Long delete(Collection<String> keys) {
+        return stringRedisTemplate.delete(keys);
     }
 }

@@ -18,6 +18,7 @@ import com.yanque.modules.rbac.pojo.vo.reqvo.RolePageReq;
 import com.yanque.modules.rbac.pojo.vo.reqvo.RoleUpdateReq;
 import com.yanque.modules.rbac.pojo.vo.resvo.RoleRes;
 import com.yanque.modules.rbac.service.SysRoleService;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysPermissionMapper permissionMapper;
     private final SysRolePermissionMapper rolePermissionMapper;
     private final SysUserRoleMapper userRoleMapper;
+    private final RbacPermissionService rbacPermissionService;
 
     @Override
     public PageResult<RoleRes> page(RolePageReq req) {
@@ -87,17 +89,23 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (roleMapper.updateById(entity) != 1) {
             throw BusinessException.of(CommonErrorCode.ROLE_OPERATION_FAILED);
         }
+        // 角色启用状态变化会影响用户的有效权限集合。
+        if (req.getStatus() != null) {
+            evictUsers(userRoleMapper.selectUserIdsByRoleId(id));
+        }
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
         getRoleOrThrow(id);
+        List<Long> affectedUserIds = userRoleMapper.selectUserIdsByRoleId(id);
         rolePermissionMapper.deleteByRoleId(id);
         userRoleMapper.deleteByRoleId(id);
         if (roleMapper.deleteById(id) != 1) {
             throw BusinessException.of(CommonErrorCode.ROLE_OPERATION_FAILED);
         }
+        evictUsers(affectedUserIds);
     }
 
     @Override
@@ -114,6 +122,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
         rolePermissionMapper.deleteByRoleId(id);
         if (!distinctIds.isEmpty()) rolePermissionMapper.batchInsert(id, distinctIds);
+        evictUsers(userRoleMapper.selectUserIdsByRoleId(id));
     }
 
     private SysRoleEntity getRoleOrThrow(Long id) {
@@ -136,5 +145,11 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     private RoleRes toRes(SysRoleEntity entity) {
         return BeanUtil.copyProperties(entity, RoleRes.class);
+    }
+
+    private void evictUsers(List<Long> userIds) {
+        if (userIds != null) {
+            userIds.forEach(rbacPermissionService::evictUserPermissions);
+        }
     }
 }

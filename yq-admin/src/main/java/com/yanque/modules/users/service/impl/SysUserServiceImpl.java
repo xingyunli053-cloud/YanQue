@@ -13,6 +13,7 @@ import com.yanque.commons.enums.CommonStatusEnum;
 import com.yanque.commons.exception.BusinessException;
 import com.yanque.commons.utils.RedisUtils;
 import com.yanque.modules.users.mapper.SysUserMapper;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import com.yanque.modules.users.pojo.entity.SysUserEntity;
 import com.yanque.modules.users.pojo.vo.reqvo.LoginReq;
 import com.yanque.modules.users.pojo.vo.reqvo.UserCreateReq;
@@ -32,6 +33,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +49,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     /** JWT 和 Redis 会话相关配置。 */
     private final AuthProperties authProperties;
+
+    /** 用户登录后权限写入 Redis Set，并用于注销或用户删除时清理缓存。 */
+    private final RbacPermissionService rbacPermissionService;
 
     @Override
     @Transactional
@@ -128,6 +133,7 @@ public class SysUserServiceImpl implements SysUserService {
         // 删除用户后立即清除其登录状态，使已签发 token 失效。
         redisUtils.delete(authProperties.getRedisKeyPrefix() + id);
         redisUtils.delete(JwtConstants.SIGN_SECRET_KEY_PREFIX + id);
+        rbacPermissionService.evictUserPermissions(id);
     }
 
     @Override
@@ -165,7 +171,29 @@ public class SysUserServiceImpl implements SysUserService {
         Duration loginTtl = Duration.ofSeconds(expireSeconds);
         redisUtils.set(authProperties.getRedisKeyPrefix() + user.getId(), token, loginTtl);
         redisUtils.set(JwtConstants.SIGN_SECRET_KEY_PREFIX + user.getId(), signSecret, loginTtl);
+        // 权限编码缓存为 Redis Set，后续 RBAC 拦截器通过 SISMEMBER 校验。
+        rbacPermissionService.cacheUserPermissions(user.getId(), loginTtl);
         return new LoginRes(token, signSecret);
+    }
+
+    @Override
+    public void logout(Long userId, String sessionId) {
+        if (userId == null || StrUtil.isBlank(sessionId)) {
+            throw BusinessException.of(CommonErrorCode.TOKEN_INVALID);
+        }
+
+        // 当前会话的所有 nonce 键都记录在 Set 中，退出时一次性清理。
+        String sessionNonceKey = JwtConstants.SIGN_NONCE_SESSION_KEY_PREFIX + userId + ":" + sessionId;
+        Set<String> nonceKeys = redisUtils.getSetMembers(sessionNonceKey);
+        if (nonceKeys != null && !nonceKeys.isEmpty()) {
+            redisUtils.delete(nonceKeys);
+        }
+        redisUtils.delete(sessionNonceKey);
+
+        // 同步删除登录状态和请求签名密钥，使当前 token 立即失效。
+        redisUtils.delete(authProperties.getRedisKeyPrefix() + userId);
+        redisUtils.delete(JwtConstants.SIGN_SECRET_KEY_PREFIX + userId);
+        rbacPermissionService.evictUserPermissions(userId);
     }
 
     /**

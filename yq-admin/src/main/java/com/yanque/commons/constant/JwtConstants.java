@@ -20,6 +20,8 @@ public final class JwtConstants {
     public static final String SIGN_NONCE_HEADER = "X-Nonce";
     public static final String SIGN_HEADER = "X-Sign";
     public static final String SIGN_NONCE_KEY_PREFIX = "yanque:sign:nonce:";
+    /** 用于归档一个登录会话产生的 nonce 键，退出时可精确清理该会话的 nonce。 */
+    public static final String SIGN_NONCE_SESSION_KEY_PREFIX = "yanque:sign:nonce:session:";
     public static final String SIGN_SECRET_KEY_PREFIX = "yanque:sign:secret:";
 
     /** JWT 中保存用户 ID 的载荷名称。 */

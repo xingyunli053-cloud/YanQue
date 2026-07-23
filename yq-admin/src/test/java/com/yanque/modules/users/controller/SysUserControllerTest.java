@@ -1,6 +1,7 @@
 package com.yanque.modules.users.controller;
 
 import com.yanque.commons.apires.PageResult;
+import com.yanque.commons.context.UserContext;
 import com.yanque.modules.users.pojo.vo.resvo.LoginRes;
 import com.yanque.modules.users.pojo.vo.resvo.UserRes;
 import com.yanque.modules.users.service.SysUserService;
@@ -35,6 +36,11 @@ class SysUserControllerTest {
         mockMvc = standaloneSetup(new SysUserController(sysUserService)).build();
     }
 
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
+        UserContext.clear();
+    }
+
     @Test
     void loginEndpoint() throws Exception {
         when(sysUserService.login(any())).thenReturn(new LoginRes("token", "secret"));
@@ -44,6 +50,16 @@ class SysUserControllerTest {
                         .content("{\"username\":\"admin\",\"password\":\"123456\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.token").value("token"));
+    }
+
+    @Test
+    void logoutEndpoint() throws Exception {
+        UserContext.set(10L, "sign-secret", "session-001");
+        doNothing().when(sysUserService).logout(10L, "session-001");
+
+        mockMvc.perform(post("/api/sysUser/logout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
     }
 
     @Test

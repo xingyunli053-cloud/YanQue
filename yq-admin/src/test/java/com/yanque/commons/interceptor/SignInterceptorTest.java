@@ -25,6 +25,7 @@ class SignInterceptorTest {
 
     private static final Long USER_ID = 10L;
     private static final String SIGN_SECRET = "request-sign-secret";
+    private static final String SESSION_ID = "session-001";
     private static final String NONCE = "nonce-001";
 
     private RedisUtils redisUtils;
@@ -34,7 +35,7 @@ class SignInterceptorTest {
     void setUp() {
         redisUtils = mock(RedisUtils.class);
         interceptor = new SignInterceptor(redisUtils);
-        UserContext.set(USER_ID, SIGN_SECRET);
+        UserContext.set(USER_ID, SIGN_SECRET, SESSION_ID);
     }
 
     @AfterEach
@@ -71,7 +72,7 @@ class SignInterceptorTest {
         String timestamp = String.valueOf(System.currentTimeMillis());
         MockHttpServletRequest request = signedRequest(timestamp, NONCE);
         when(redisUtils.setIfAbsent(
-                JwtConstants.SIGN_NONCE_KEY_PREFIX + USER_ID + ":" + NONCE,
+                nonceKey(NONCE),
                 "1",
                 JwtConstants.SIGN_VALID_DURATION)).thenReturn(false);
 
@@ -118,16 +119,26 @@ class SignInterceptorTest {
 
         assertTrue(interceptor.preHandle(request, new MockHttpServletResponse(), new Object()));
         verify(redisUtils).setIfAbsent(
-                JwtConstants.SIGN_NONCE_KEY_PREFIX + USER_ID + ":" + NONCE,
+                nonceKey(NONCE),
                 "1",
                 JwtConstants.SIGN_VALID_DURATION);
+        verify(redisUtils).addToSet(sessionNonceKey(), nonceKey(NONCE));
+        verify(redisUtils).expire(sessionNonceKey(), JwtConstants.SIGN_VALID_DURATION);
     }
 
     private void allowNonce(String nonce) {
         when(redisUtils.setIfAbsent(
-                JwtConstants.SIGN_NONCE_KEY_PREFIX + USER_ID + ":" + nonce,
+                nonceKey(nonce),
                 "1",
                 JwtConstants.SIGN_VALID_DURATION)).thenReturn(true);
+    }
+
+    private String nonceKey(String nonce) {
+        return JwtConstants.SIGN_NONCE_KEY_PREFIX + USER_ID + ":" + SESSION_ID + ":" + nonce;
+    }
+
+    private String sessionNonceKey() {
+        return JwtConstants.SIGN_NONCE_SESSION_KEY_PREFIX + USER_ID + ":" + SESSION_ID;
     }
 
     private MockHttpServletRequest signedRequest(String timestamp, String nonce) {

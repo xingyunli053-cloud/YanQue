@@ -14,6 +14,8 @@ public interface SysUserService {
 
     LoginRes login(LoginReq req);
 
+    void logout(Long userId, String sessionId);
+
     PageResult<UserRes> page(UserPageReq req);
 
     UserRes detail(Long id);

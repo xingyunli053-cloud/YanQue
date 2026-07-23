@@ -8,6 +8,7 @@ import com.yanque.commons.constant.JwtConstants;
 import com.yanque.commons.exception.BusinessException;
 import com.yanque.commons.utils.RedisUtils;
 import com.yanque.modules.users.mapper.SysUserMapper;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import com.yanque.modules.users.pojo.entity.SysUserEntity;
 import com.yanque.modules.users.pojo.vo.reqvo.UserPageReq;
 import com.yanque.modules.users.pojo.vo.reqvo.UserUpdateReq;
@@ -30,15 +31,17 @@ class SysUserCrudServiceTest {
 
     private RedisUtils redisUtils;
     private SysUserMapper sysUserMapper;
+    private RbacPermissionService permissionCache;
     private SysUserServiceImpl service;
 
     @BeforeEach
     void setUp() {
         redisUtils = mock(RedisUtils.class);
         sysUserMapper = mock(SysUserMapper.class);
+        permissionCache = mock(RbacPermissionService.class);
         AuthProperties authProperties = new AuthProperties();
         authProperties.setRedisKeyPrefix(REDIS_KEY_PREFIX);
-        service = new SysUserServiceImpl(redisUtils, sysUserMapper, authProperties);
+        service = new SysUserServiceImpl(redisUtils, sysUserMapper, authProperties, permissionCache);
     }
 
     @AfterEach
@@ -103,6 +106,7 @@ class SysUserCrudServiceTest {
         verify(sysUserMapper).deleteById(10L);
         verify(redisUtils).delete(REDIS_KEY_PREFIX + 10L);
         verify(redisUtils).delete(JwtConstants.SIGN_SECRET_KEY_PREFIX + 10L);
+        verify(permissionCache).evictUserPermissions(10L);
     }
 
     private SysUserEntity user(Long id, String username) {

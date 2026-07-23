@@ -11,6 +11,7 @@ import com.yanque.commons.exception.BusinessException;
 import com.yanque.modules.rbac.enums.PermissionTypeEnum;
 import com.yanque.modules.rbac.mapper.SysPermissionMapper;
 import com.yanque.modules.rbac.mapper.SysRolePermissionMapper;
+import com.yanque.modules.rbac.model.PermissionMetadata;
 import com.yanque.modules.rbac.pojo.entity.SysPermissionEntity;
 import com.yanque.modules.rbac.pojo.vo.reqvo.PermissionCreateReq;
 import com.yanque.modules.rbac.pojo.vo.reqvo.PermissionPageReq;
@@ -19,6 +20,7 @@ import com.yanque.modules.rbac.pojo.vo.reqvo.PermissionUpdateReq;
 import com.yanque.modules.rbac.pojo.vo.resvo.PermissionRes;
 import com.yanque.modules.rbac.pojo.vo.resvo.PermissionTreeRes;
 import com.yanque.modules.rbac.service.SysPermissionService;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +29,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class SysPermissionServiceImpl implements SysPermissionService {
     private final SysPermissionMapper permissionMapper;
     private final SysRolePermissionMapper rolePermissionMapper;
+    private final RbacPermissionService rbacPermissionService;
 
     @Override
     public PageResult<PermissionRes> page(PermissionPageReq req) {
@@ -106,6 +111,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
         if (permissionMapper.updateById(entity) != 1) {
             throw BusinessException.of(CommonErrorCode.PERMISSION_OPERATION_FAILED);
         }
+        evictUsers(rolePermissionMapper.selectUserIdsByPermissionId(id));
     }
 
     @Override
@@ -115,10 +121,71 @@ public class SysPermissionServiceImpl implements SysPermissionService {
         if (permissionMapper.countByParentId(id) > 0) {
             throw BusinessException.of(CommonErrorCode.PERMISSION_HAS_CHILDREN);
         }
+        List<Long> affectedUserIds = rolePermissionMapper.selectUserIdsByPermissionId(id);
         rolePermissionMapper.deleteByPermissionId(id);
         if (permissionMapper.deleteById(id) != 1) {
             throw BusinessException.of(CommonErrorCode.PERMISSION_OPERATION_FAILED);
         }
+        evictUsers(affectedUserIds);
+    }
+
+    @Override
+    @Transactional
+    public void syncMissingPermissions(List<PermissionMetadata> metadataList) {
+        Map<String, PermissionMetadata> metadataByCode = new LinkedHashMap<>();
+        for (PermissionMetadata metadata : metadataList) {
+            PermissionMetadata previous = metadataByCode.putIfAbsent(metadata.permissionCode(), metadata);
+            if (previous != null && !previous.equals(metadata)) {
+                throw new IllegalStateException("发现重复且内容不一致的权限编码：" + metadata.permissionCode());
+            }
+        }
+
+        Set<String> processingCodes = new HashSet<>();
+        for (PermissionMetadata metadata : metadataByCode.values()) {
+            syncMissingPermission(metadata, metadataByCode, processingCodes);
+        }
+    }
+
+    private Long syncMissingPermission(PermissionMetadata metadata,
+                                       Map<String, PermissionMetadata> metadataByCode,
+                                       Set<String> processingCodes) {
+        SysPermissionEntity existing = permissionMapper.selectByPermissionCode(metadata.permissionCode());
+        // 已有权限可能被管理员禁用、调整层级或授予角色；启动同步绝不覆盖这些人工数据。
+        if (existing != null) {
+            return existing.getId();
+        }
+        if (!processingCodes.add(metadata.permissionCode())) {
+            throw new IllegalStateException("权限元数据存在循环父子关系：" + metadata.permissionCode());
+        }
+
+        Long parentId = 0L;
+        if (StrUtil.isNotBlank(metadata.parentCode())) {
+            SysPermissionEntity parent = permissionMapper.selectByPermissionCode(metadata.parentCode());
+            if (parent == null) {
+                PermissionMetadata parentMetadata = metadataByCode.get(metadata.parentCode());
+                if (parentMetadata == null) {
+                    throw new IllegalStateException("未找到父权限编码：" + metadata.parentCode());
+                }
+                parentId = syncMissingPermission(parentMetadata, metadataByCode, processingCodes);
+            } else {
+                parentId = parent.getId();
+            }
+        }
+
+        SysPermissionEntity entity = new SysPermissionEntity();
+        entity.setParentId(parentId);
+        entity.setPermissionCode(metadata.permissionCode());
+        entity.setPermissionName(metadata.permissionName());
+        entity.setPermissionType(metadata.permissionType().name());
+        entity.setApiPath(metadata.apiPath());
+        entity.setSortNum(metadata.sortNum());
+        entity.setDescription(StrUtil.emptyToNull(metadata.description()));
+        entity.setStatus(CommonStatusEnum.ACTIVE.name());
+        if (permissionMapper.insert(entity) != 1) {
+            throw BusinessException.of(CommonErrorCode.PERMISSION_OPERATION_FAILED);
+        }
+        processingCodes.remove(metadata.permissionCode());
+        return entity.getId();
     }
 
     private void validateParent(Long currentId, Long parentId) {
@@ -166,5 +233,11 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     private PermissionTreeRes toTreeRes(SysPermissionEntity entity) {
         return BeanUtil.copyProperties(entity, PermissionTreeRes.class);
+    }
+
+    private void evictUsers(List<Long> userIds) {
+        if (userIds != null) {
+            userIds.forEach(rbacPermissionService::evictUserPermissions);
+        }
     }
 }

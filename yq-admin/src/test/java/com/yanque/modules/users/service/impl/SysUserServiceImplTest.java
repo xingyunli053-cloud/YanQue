@@ -6,6 +6,7 @@ import com.yanque.commons.constant.JwtConstants;
 import com.yanque.commons.enums.CommonStatusEnum;
 import com.yanque.commons.utils.RedisUtils;
 import com.yanque.modules.users.mapper.SysUserMapper;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import com.yanque.modules.users.pojo.entity.SysUserEntity;
 import com.yanque.modules.users.pojo.vo.reqvo.LoginReq;
 import com.yanque.modules.users.pojo.vo.resvo.LoginRes;
@@ -15,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,18 +34,20 @@ class SysUserServiceImplTest {
 
     private RedisUtils redisUtils;
     private SysUserMapper sysUserMapper;
+    private RbacPermissionService permissionCache;
     private SysUserServiceImpl service;
 
     @BeforeEach
     void setUp() {
         redisUtils = mock(RedisUtils.class);
         sysUserMapper = mock(SysUserMapper.class);
+        permissionCache = mock(RbacPermissionService.class);
 
         AuthProperties authProperties = new AuthProperties();
         authProperties.setJwtSecret(JWT_SECRET);
         authProperties.setTokenExpireSeconds(EXPIRE_SECONDS);
         authProperties.setRedisKeyPrefix(REDIS_KEY_PREFIX);
-        service = new SysUserServiceImpl(redisUtils, sysUserMapper, authProperties);
+        service = new SysUserServiceImpl(redisUtils, sysUserMapper, authProperties, permissionCache);
     }
 
     @Test
@@ -76,5 +80,22 @@ class SysUserServiceImplTest {
                 JwtConstants.SIGN_SECRET_KEY_PREFIX + 10L,
                 result.getSignSecret(),
                 expectedTtl);
+        verify(permissionCache).cacheUserPermissions(10L, expectedTtl);
+    }
+
+    @Test
+    void logoutClearsCurrentSessionNoncesAndLoginState() {
+        String sessionId = "session-001";
+        String sessionNonceKey = JwtConstants.SIGN_NONCE_SESSION_KEY_PREFIX + "10:" + sessionId;
+        Set<String> nonceKeys = Set.of("yanque:sign:nonce:10:session-001:nonce-a");
+        when(redisUtils.getSetMembers(sessionNonceKey)).thenReturn(nonceKeys);
+
+        service.logout(10L, sessionId);
+
+        verify(redisUtils).delete(nonceKeys);
+        verify(redisUtils).delete(sessionNonceKey);
+        verify(redisUtils).delete(REDIS_KEY_PREFIX + 10L);
+        verify(redisUtils).delete(JwtConstants.SIGN_SECRET_KEY_PREFIX + 10L);
+        verify(permissionCache).evictUserPermissions(10L);
     }
 }

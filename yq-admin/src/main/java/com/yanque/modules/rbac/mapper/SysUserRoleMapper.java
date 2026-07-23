@@ -14,6 +14,7 @@ public interface SysUserRoleMapper {
     UserRoleRes selectResById(Long id);
     List<UserRoleRes> selectList(UserRolePageReq req);
     List<Long> selectRoleIdsByUserId(Long userId);
+    List<Long> selectUserIdsByRoleId(Long roleId);
     int countUnique(@Param("userId") Long userId,
                     @Param("roleId") Long roleId,
                     @Param("excludeId") Long excludeId);

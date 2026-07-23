@@ -65,13 +65,15 @@ public class SignInterceptor implements HandlerInterceptor {
 
         Long userId = UserContext.getUserId();
         String signSecret = UserContext.getSignSecret();
-        if (userId == null || StrUtil.isBlank(signSecret)) {
+        String sessionId = UserContext.getSessionId();
+        if (userId == null || StrUtil.isBlank(signSecret) || StrUtil.isBlank(sessionId)) {
             throw BusinessException.of(CommonErrorCode.SIGN_SECRET_NOT_FOUND);
         }
 
         // 3. 通过 Redis SETNX 记录 nonce，防止同一个请求被重复执行。
-        // Redis 键中加入 uid，避免不同用户偶然生成相同 nonce 时互相影响。
-        String nonceKey = JwtConstants.SIGN_NONCE_KEY_PREFIX + userId + ":" + nonce;
+        // Redis 键中加入 uid 和会话 jti，避免不同用户或不同登录会话互相影响。
+        String nonceKey = JwtConstants.SIGN_NONCE_KEY_PREFIX + userId + ":" + sessionId + ":" + nonce;
+        String sessionNonceKey = JwtConstants.SIGN_NONCE_SESSION_KEY_PREFIX + userId + ":" + sessionId;
         Boolean stored = redisUtils.setIfAbsent(
                 nonceKey,
                 NONCE_REDIS_VALUE,
@@ -79,6 +81,9 @@ public class SignInterceptor implements HandlerInterceptor {
         if (!Boolean.TRUE.equals(stored)) {
             throw BusinessException.of(CommonErrorCode.SIGN_NONCE_REPEATED);
         }
+        // 将 nonce 键归档到当前会话。退出登录时可以删除集合内所有 nonce 键。
+        redisUtils.addToSet(sessionNonceKey, nonceKey);
+        redisUtils.expire(sessionNonceKey, JwtConstants.SIGN_VALID_DURATION);
 
         // 4. 签名只允许在五分钟时间窗口内使用，同时拒绝超前五分钟以上的时间戳。
         long now = System.currentTimeMillis();

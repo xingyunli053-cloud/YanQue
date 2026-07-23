@@ -14,6 +14,8 @@ public interface SysPermissionMapper {
     SysPermissionEntity selectByPermissionCode(String permissionCode);
     List<SysPermissionEntity> selectList(PermissionPageReq req);
     List<SysPermissionEntity> selectTreeList(PermissionTreeReq req);
+    /** 查询用户通过角色获得的全部启用权限编码。 */
+    List<String> selectActivePermissionCodesByUserId(@Param("userId") Long userId);
     List<Long> selectExistingIds(@Param("ids") List<Long> ids);
     int countByParentId(Long parentId);
     int countDescendantByIdAndCandidate(@Param("id") Long id,

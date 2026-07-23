@@ -37,6 +37,9 @@ public class GlobalExceptionHandler {
         if (CommonErrorCode.SIGN_NONCE_REPEATED.getCode().equals(e.getCode())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
+        if (CommonErrorCode.PERMISSION_DENIED.getCode().equals(e.getCode())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
         return ResponseEntity.ok(response);
     }
 

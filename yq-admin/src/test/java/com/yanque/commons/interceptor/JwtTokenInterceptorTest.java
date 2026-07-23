@@ -106,10 +106,12 @@ class JwtTokenInterceptorTest {
         assertTrue(interceptor.preHandle(request, response, new Object()));
         assertEquals(USER_ID, UserContext.getUserId());
         assertEquals("sign-secret", UserContext.getSignSecret());
+        assertEquals("test-jti", UserContext.getSessionId());
 
         interceptor.afterCompletion(request, response, new Object(), null);
         assertNull(UserContext.getUserId());
         assertNull(UserContext.getSignSecret());
+        assertNull(UserContext.getSessionId());
     }
 
     private MockHttpServletRequest requestWithToken(String token) {

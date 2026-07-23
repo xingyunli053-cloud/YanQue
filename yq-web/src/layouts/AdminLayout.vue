@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { SwitchButton } from '@element-plus/icons-vue'
 import { clearSession } from '../utils/auth'
+import { logout as logoutRequest } from '../api/user'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,8 +17,13 @@ async function logout() {
     cancelButtonText: '取消',
     type: 'warning',
   })
-  clearSession()
-  router.replace('/login')
+  try {
+    await logoutRequest()
+  } finally {
+    // 无论请求是否成功，都清除浏览器中的凭证，避免本地残留登录态。
+    clearSession()
+    router.replace('/login')
+  }
 }
 </script>
 

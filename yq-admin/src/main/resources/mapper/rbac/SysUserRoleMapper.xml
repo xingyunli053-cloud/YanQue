@@ -39,6 +39,9 @@
     <select id="selectRoleIdsByUserId" resultType="java.lang.Long">
         select role_id from sys_user_role where user_id = #{userId} order by role_id
     </select>
+    <select id="selectUserIdsByRoleId" resultType="java.lang.Long">
+        select user_id from sys_user_role where role_id = #{roleId} order by user_id
+    </select>
     <select id="countUnique" resultType="int">
         select count(1) from sys_user_role
         where user_id = #{userId} and role_id = #{roleId}

@@ -39,6 +39,13 @@
     <select id="selectPermissionIdsByRoleId" resultType="java.lang.Long">
         select permission_id from sys_role_permission where role_id = #{roleId} order by permission_id
     </select>
+    <select id="selectUserIdsByPermissionId" resultType="java.lang.Long">
+        select distinct user_role.user_id
+        from sys_role_permission role_permission
+        inner join sys_user_role user_role on user_role.role_id = role_permission.role_id
+        where role_permission.permission_id = #{permissionId}
+        order by user_role.user_id
+    </select>
     <select id="countUnique" resultType="int">
         select count(1) from sys_role_permission
         where role_id = #{roleId} and permission_id = #{permissionId}

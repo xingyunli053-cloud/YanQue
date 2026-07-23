@@ -8,11 +8,13 @@ import com.yanque.commons.exception.BusinessException;
 import com.yanque.modules.rbac.mapper.SysPermissionMapper;
 import com.yanque.modules.rbac.mapper.SysRoleMapper;
 import com.yanque.modules.rbac.mapper.SysRolePermissionMapper;
+import com.yanque.modules.rbac.mapper.SysUserRoleMapper;
 import com.yanque.modules.rbac.pojo.entity.SysRolePermissionEntity;
 import com.yanque.modules.rbac.pojo.vo.reqvo.RolePermissionPageReq;
 import com.yanque.modules.rbac.pojo.vo.reqvo.RolePermissionSaveReq;
 import com.yanque.modules.rbac.pojo.vo.resvo.RolePermissionRes;
 import com.yanque.modules.rbac.service.SysRolePermissionService;
+import com.yanque.modules.rbac.service.RbacPermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ public class SysRolePermissionServiceImpl implements SysRolePermissionService {
     private final SysRolePermissionMapper relationMapper;
     private final SysRoleMapper roleMapper;
     private final SysPermissionMapper permissionMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final RbacPermissionService rbacPermissionService;
 
     @Override
     public PageResult<RolePermissionRes> page(RolePermissionPageReq req) {
@@ -50,13 +54,14 @@ public class SysRolePermissionServiceImpl implements SysRolePermissionService {
         if (relationMapper.insert(entity) != 1) {
             throw BusinessException.of(CommonErrorCode.RELATION_OPERATION_FAILED);
         }
+        evictRoleUsers(req.getRoleId());
         return entity.getId();
     }
 
     @Override
     @Transactional
     public void update(Long id, RolePermissionSaveReq req) {
-        getRelationOrThrow(id);
+        SysRolePermissionEntity current = getRelationOrThrow(id);
         validateRelation(req, id);
         SysRolePermissionEntity entity = new SysRolePermissionEntity();
         entity.setId(id);
@@ -65,15 +70,18 @@ public class SysRolePermissionServiceImpl implements SysRolePermissionService {
         if (relationMapper.updateById(entity) != 1) {
             throw BusinessException.of(CommonErrorCode.RELATION_OPERATION_FAILED);
         }
+        evictRoleUsers(current.getRoleId());
+        evictRoleUsers(req.getRoleId());
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        getRelationOrThrow(id);
+        SysRolePermissionEntity current = getRelationOrThrow(id);
         if (relationMapper.deleteById(id) != 1) {
             throw BusinessException.of(CommonErrorCode.RELATION_OPERATION_FAILED);
         }
+        evictRoleUsers(current.getRoleId());
     }
 
     private void validateRelation(RolePermissionSaveReq req, Long excludeId) {
@@ -92,5 +100,12 @@ public class SysRolePermissionServiceImpl implements SysRolePermissionService {
         SysRolePermissionEntity entity = id == null ? null : relationMapper.selectById(id);
         if (entity == null) throw BusinessException.of(CommonErrorCode.ROLE_PERMISSION_NOT_FOUND);
         return entity;
+    }
+
+    private void evictRoleUsers(Long roleId) {
+        List<Long> userIds = userRoleMapper.selectUserIdsByRoleId(roleId);
+        if (userIds != null) {
+            userIds.forEach(rbacPermissionService::evictUserPermissions);
+        }
     }
 }

@@ -2,6 +2,8 @@ package com.yanque.modules.rbac.controller;
 
 import com.yanque.commons.apires.ApiResponse;
 import com.yanque.commons.apires.PageResult;
+import com.yanque.modules.rbac.annotation.PermissionMeta;
+import com.yanque.modules.rbac.enums.PermissionTypeEnum;
 import com.yanque.modules.rbac.pojo.vo.reqvo.RolePermissionPageReq;
 import com.yanque.modules.rbac.pojo.vo.reqvo.RolePermissionSaveReq;
 import com.yanque.modules.rbac.pojo.vo.resvo.RolePermissionRes;
@@ -28,24 +30,32 @@ public class SysRolePermissionController {
 
     @Operation(summary = "分页查询角色权限关联")
     @GetMapping
+    @PermissionMeta(value = "api:role-permission:page", name = "分页查询角色权限关联", type = PermissionTypeEnum.API,
+            parentCode = "system:role", sort = 1151)
     public ApiResponse<PageResult<RolePermissionRes>> page(@Valid RolePermissionPageReq req) {
         return ApiResponse.success(service.page(req));
     }
 
     @Operation(summary = "查询角色权限关联详情")
     @GetMapping("/{id}")
+    @PermissionMeta(value = "api:role-permission:detail", name = "查询角色权限关联详情", type = PermissionTypeEnum.API,
+            parentCode = "system:role", sort = 1152)
     public ApiResponse<RolePermissionRes> detail(@PathVariable Long id) {
         return ApiResponse.success(service.detail(id));
     }
 
     @Operation(summary = "新增角色权限关联")
     @PostMapping
+    @PermissionMeta(value = "api:role-permission:create", name = "新增角色权限关联", type = PermissionTypeEnum.API,
+            parentCode = "system:role", sort = 1153)
     public ApiResponse<Long> create(@Valid @RequestBody RolePermissionSaveReq req) {
         return ApiResponse.success(service.create(req));
     }
 
     @Operation(summary = "修改角色权限关联")
     @PutMapping("/{id}")
+    @PermissionMeta(value = "api:role-permission:update", name = "修改角色权限关联", type = PermissionTypeEnum.API,
+            parentCode = "system:role", sort = 1154)
     public ApiResponse<Void> update(@PathVariable Long id,
                                     @Valid @RequestBody RolePermissionSaveReq req) {
         service.update(id, req);
@@ -54,6 +64,8 @@ public class SysRolePermissionController {
 
     @Operation(summary = "删除角色权限关联")
     @DeleteMapping("/{id}")
+    @PermissionMeta(value = "api:role-permission:delete", name = "删除角色权限关联", type = PermissionTypeEnum.API,
+            parentCode = "system:role", sort = 1155)
     public ApiResponse<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ApiResponse.success();

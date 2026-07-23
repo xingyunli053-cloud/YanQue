@@ -14,6 +14,7 @@ public interface SysRolePermissionMapper {
     RolePermissionRes selectResById(Long id);
     List<RolePermissionRes> selectList(RolePermissionPageReq req);
     List<Long> selectPermissionIdsByRoleId(Long roleId);
+    List<Long> selectUserIdsByPermissionId(Long permissionId);
     int countUnique(@Param("roleId") Long roleId,
                     @Param("permissionId") Long permissionId,
                     @Param("excludeId") Long excludeId);
