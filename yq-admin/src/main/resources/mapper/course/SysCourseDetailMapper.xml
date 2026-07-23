@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yanque.modules.course.mapper.SysCourseDetailMapper">
+
+    <resultMap id="SysCourseDetailMap" type="com.yanque.modules.course.pojo.entity.SysCourseDetailEntity">
+        <id property="id" column="id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="stageName" column="stage_name"/>
+        <result property="dayNumber" column="day_number"/>
+        <result property="classContent" column="class_content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="SysCourseDetailMap">
+        select id, course_id, stage_name, day_number, class_content, created_at, updated_at
+        from sys_course_detail where id = #{id}
+    </select>
+
+    <select id="selectByCourseId" resultMap="SysCourseDetailMap">
+        select id, course_id, stage_name, day_number, class_content, created_at, updated_at
+        from sys_course_detail
+        where course_id = #{courseId}
+        <!-- 线下课程按天数展示，线上课程 day_number 为 NULL 时再按 ID 保持稳定顺序。 -->
+        order by day_number is null, day_number asc, id asc
+    </select>
+
+    <insert id="insert" parameterType="com.yanque.modules.course.pojo.entity.SysCourseDetailEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into sys_course_detail (course_id, stage_name, day_number, class_content, created_at, updated_at)
+        values (#{courseId}, #{stageName}, #{dayNumber}, #{classContent}, now(), now())
+    </insert>
+
+    <update id="updateById" parameterType="com.yanque.modules.course.pojo.entity.SysCourseDetailEntity">
+        update sys_course_detail
+        set stage_name = #{stageName}, day_number = #{dayNumber}, class_content = #{classContent}, updated_at = now()
+        where id = #{id}
+    </update>
+
+    <select id="sumDayNumbersByCourseId" resultType="int">
+        select coalesce(sum(day_number), 0) from sys_course_detail where course_id = #{courseId}
+    </select>
+
+    <select id="countByCourseId" resultType="int">
+        select count(1) from sys_course_detail where course_id = #{courseId}
+    </select>
+
+    <delete id="deleteByCourseId">
+        delete from sys_course_detail where course_id = #{courseId}
+    </delete>
+
+    <delete id="deleteById">
+        delete from sys_course_detail where id = #{id}
+    </delete>
+
+    <insert id="batchInsert">
+        insert into sys_course_detail (course_id, stage_name, day_number, class_content)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.courseId}, #{item.stageName}, #{item.dayNumber}, #{item.classContent})
+        </foreach>
+    </insert>
+</mapper>

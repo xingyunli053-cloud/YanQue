@@ -15,6 +15,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+
 @Aspect
 @Component
 @Slf4j
@@ -31,7 +33,7 @@ public class ControllerLogAspect {
                 request == null ? "-" : request.getRequestURI(),
                 request == null ? "-" : request.getMethod(),
                 methodName,
-                JSON.toJSONString(joinPoint.getArgs()));
+                JSON.toJSONString(sanitizeArgs(joinPoint.getArgs())));
 
         Object result = joinPoint.proceed();
         long cost = System.currentTimeMillis() - start;
@@ -56,5 +58,20 @@ public class ControllerLogAspect {
                 || arg instanceof ServletRequest
                 || arg instanceof ServletResponse
                 || arg instanceof MultipartFile;
+    }
+
+    /**
+     * 上传文件不能直接 JSON 序列化：FastJSON 会尝试读取 MultipartFile 底层资源 URL，
+     * 从而在日志切面阶段抛出 FileNotFoundException。日志只保留文件元信息。
+     */
+    private Object[] sanitizeArgs(Object[] args) {
+        return Arrays.stream(args).map(arg -> {
+            if (arg instanceof MultipartFile file) {
+                return "MultipartFile{name=" + file.getName()
+                        + ", originalFilename=" + file.getOriginalFilename()
+                        + ", size=" + file.getSize() + "}";
+            }
+            return shouldIgnore(arg) ? "[ignored]" : arg;
+        }).toArray();
     }
 }

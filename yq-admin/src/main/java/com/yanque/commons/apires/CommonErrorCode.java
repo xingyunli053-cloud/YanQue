@@ -56,7 +56,13 @@ public enum CommonErrorCode implements IErrorCode{
     CAMPUS_NOT_FOUND(15001, "校区不存在"),
     CAMPUS_HAS_CLASSES(15002, "校区下存在班级，不能删除"),
     CAMPUS_OPERATION_FAILED(15003, "校区操作失败"),
-    CAMPUS_LOCATION_ALREADY_EXISTS(15004, "该校区地点已存在");
+    CAMPUS_LOCATION_ALREADY_EXISTS(15004, "该校区地点已存在"),
+
+    COURSE_NOT_FOUND(16001, "课程不存在"),
+    COURSE_DETAIL_NOT_FOUND(16002, "课程详情不存在"),
+    COURSE_OPERATION_FAILED(16003, "课程操作失败"),
+    COURSE_DELETE_FAILED(16004, "课程删除失败"),
+    COURSE_HAS_DETAILS(16005, "课程下存在课程详情，不能删除");
 
 
     private Integer code;

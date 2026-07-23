@@ -12,6 +12,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -49,7 +50,14 @@ public class RequestLogAspect {
         }
         Object[] args = joinPoint.getArgs();
         if (args.length > 0) {
-            log.info("请求参数: {}", Arrays.toString(args));
+            // MultipartFile 仅记录元信息，避免日志框架间接访问上传资源。
+            log.info("请求参数: {}", Arrays.toString(Arrays.stream(args).map(arg -> {
+                if (arg instanceof MultipartFile file) {
+                    return "MultipartFile{name=" + file.getName() + ", originalFilename="
+                            + file.getOriginalFilename() + ", size=" + file.getSize() + "}";
+                }
+                return arg;
+            }).toArray()));
         }
     }
 
