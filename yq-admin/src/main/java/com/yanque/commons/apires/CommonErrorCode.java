@@ -51,7 +51,12 @@ public enum CommonErrorCode implements IErrorCode{
     ROLE_PERMISSION_ALREADY_EXISTS(13202, "角色权限关联已存在"),
     USER_ROLE_NOT_FOUND(13301, "用户角色关联不存在"),
     USER_ROLE_ALREADY_EXISTS(13302, "用户角色关联已存在"),
-    RELATION_OPERATION_FAILED(13303, "关联关系操作失败");
+    RELATION_OPERATION_FAILED(13303, "关联关系操作失败"),
+
+    CAMPUS_NOT_FOUND(15001, "校区不存在"),
+    CAMPUS_HAS_CLASSES(15002, "校区下存在班级，不能删除"),
+    CAMPUS_OPERATION_FAILED(15003, "校区操作失败"),
+    CAMPUS_LOCATION_ALREADY_EXISTS(15004, "该校区地点已存在");
 
 
     private Integer code;

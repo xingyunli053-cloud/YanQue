@@ -10,5 +10,6 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PermissionTreeRes extends PermissionRes {
+    /** 当前权限节点的直接子节点。 */
     private List<PermissionTreeRes> children = new ArrayList<>();
 }
